@@ -13,7 +13,11 @@
 }
 ```
 - Run setup/setup.sql
-- Use ``node index.js`` to index your image database. This is stored in PostGres for later use.
+- Use ``node index.js --path path/to/pictures`` to index your image database.
+When the indexer is complete, you'll have your database filled with rows that have searchable properties.
 
-## Usage (after indexation)
-Use ``node search.js`` to get options for how to search your database. When search is done, the results are outputted to the console.
+## Usage
+You can either run queries right in PSQL to select the properties you want, or use ``node search.js`` for typical queries.
+
+#### Last words
+I hope that you'll enjoy this script, and that I'll be done with this in a foreseeable future.
