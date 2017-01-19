@@ -1,25 +1,32 @@
 var fs = require('fs');
 var recursive = require('recursive-readdir');
 var exif = require('exif-parser')
-var Benchmark = require('benchmark');
-var db = require('./db-connect');
-var suite = new Benchmark.Suite;
+var db = require('./helpers/db-connect');
+var moment = require('moment');
+
+const primarytable = 'imageindex';
 
 recursive('img', ['*.MOV','*.MP4'], function (err, files) {
     files.forEach(function (file, i) {
         fs.open(file, 'r', function (status, fd) {
             if (status) {
-                console.log(status.message);
+                console.error(status.message);
                 return;
             }
-            let start = Date.now();
             const l = 30000;
             read(fd,l,file).then((result)=>{
-                console.log(result.tags.CreateDate);
-                //TODO: Modify DB so that it can take more properties.
-                //FocalLength, ApertureValue, ISO, LensModel, Location
-
-                db.query('INSERT INTO kamerabilder (filepath,date) VALUES ($1,$2)',[file,result.tags.CreateDate]);
+                var data = [
+                    file,
+                    moment(result.tags.CreateDate),
+                    result.tags.FocalLength,
+                    result.tags.ApertureValue,
+                    result.tags.ISO,
+                    result.tags.LensModel,
+                    result.tags.Location,
+                    result.tags.Model
+                ];
+                console.log(data[1]);
+                db.query(`INSERT INTO ${primarytable} (filepath,date,focallength,aperture,iso,lensmodel,location,cameramodel) VALUES ($1,$2,$3,$4,$5,$6,$7,$8);`, data);
             });
         });
     });

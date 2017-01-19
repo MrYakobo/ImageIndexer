@@ -1,9 +1,9 @@
 var pg = require('pg');
-var c = require('./credentials')
+var c = require('../setup/credentials')
 
 var config = {
     user: c.username,
-    database: 'localdb',
+    database: c.db,
     password: c.password,
     host: 'localhost',
     port: 5432,
