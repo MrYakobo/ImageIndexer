@@ -13,7 +13,7 @@ recursive('img', ['*.MOV','*.MP4'], function (err, files) {
                 console.error(status.message);
                 return;
             }
-            const l = 30000;
+            const l = Math.pow(2,16);
             read(fd,l,file).then((result)=>{
                 var data = [
                     file,

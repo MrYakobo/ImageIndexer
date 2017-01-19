@@ -6,7 +6,7 @@ const sections = [{
 }, {
   header: 'Options',
   optionList: [{
-    name: 'sql <query>',
+    name: 'sql "<query>"',
     description: 'Run query against the database.'
   }]
 }, {
