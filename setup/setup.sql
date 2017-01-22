@@ -1,11 +1,12 @@
-CREATE TABLE imageindex (
-    id bigint NOT NULL,
-    filepath text NOT NULL,
+CREATE TABLE imageindex
+(
+    id serial primary key,
+    filepath varchar(300) UNIQUE NOT NULL,
+    date date,
     focallength double precision,
     aperture double precision,
     iso integer,
-    lensmodel text,
-    location text,
-    cameramodel text,
-    date date
+    lensmodel varchar(100),
+    location varchar(200),
+    cameramodel varchar(100)
 );

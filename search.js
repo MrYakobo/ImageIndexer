@@ -22,13 +22,15 @@ else if (options.weekday != null) {
     var tot = [];
     options.weekday.forEach(function (weekday, i) {
         var ind = moment().day(weekday).weekday()
-        var sql = `SELECT filepath FROM imageindex WHERE EXTRACT(dow FROM date) = ${ind};`;
+        var sql = `SELECT filepath FROM table2 WHERE EXTRACT(dow FROM date) = ${ind};`;
         db.query(sql).then((results) => {
-            var p = results.map((result) => {
-                return result.filepath;
+            var p = [];
+            results.rows.forEach(function(result) {
+               tot.push(result.filepath);
             });
 
             tot = tot.concat(p);
+            
             if (i === options.weekday.length - 1) {
                 console.log(JSON.stringify(tot));
                 process.exit();

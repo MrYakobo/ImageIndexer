@@ -7,30 +7,34 @@ var config = {
     password: c.password,
     host: 'localhost',
     port: 5432,
-    max: 1,
-    idleTimeoutMillis: 30000,
+    max: 100,
+    idleTimeoutMillis: 0,
 };
 
+process.setMaxListeners(0);
 var pool = new pg.Pool(config);
 
-pool.on('error', function (err, client) {
-    console.error('idle client error', err.message, err.stack)
-})
-
 exports.query = function (sql, data) {
-    return new Promise((success) => {
-        pool.connect(function (err, client, done) {
-            if (err) {
-                return console.error('error fetching client from pool', err);
-            }
-            client.query(sql, data, function (err, result) {
-                done();
-
-                if (err) {
-                    return console.error('error running query', err);
-                }
-                success(result.rows);
-            });
-        });
-    });
+    return new Promise((success,reject) => {
+        pool.connect().then(client => {
+            client.query(sql, data).then(res => {
+                    client.release()
+                    success(res);
+                })
+                .catch(e => {
+                    client.release()
+                    var str;
+                    if (e.code === '23505') {
+                        str = 'Warning: File exists already in db'
+                    } else if (e.code === '22007') {
+                        `Invalid date in data: ${data}`
+                    } else {
+                        str = 'error'
+                        console.error('query error', e.message, e.stack)
+                    }
+                    console.log(str)
+                    reject(str)
+                })
+        })
+    })
 }
