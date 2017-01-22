@@ -4,7 +4,7 @@
     <!-- Compiled and minified CSS -->
     <link async rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
     <style>
-        img{
+        img {
             max-width: 600px;
             margin-top: 10px;
         }
@@ -13,23 +13,84 @@
 
 <body class="container center-align">
     <h1>Sök i databasen</h1>
-    <!--<h3>Genererad SQL-kod</h3>-->
-    <!--<div class="row">-->
-    <!--<form class="col s12">-->
+    <div class="row">
+        <h5>Veckodagar</h5>
+        <div class="col s12" id="weekdays">
+            <input type="checkbox" class="filled-in" id="w1" />
+            <label for="w1">Måndag</label>
+            <input type="checkbox" class="filled-in" id="w2" />
+            <label for="w2">Tisdag</label>
+            <input type="checkbox" class="filled-in" id="w3" />
+            <label for="w3">Onsdag</label>
+            <input type="checkbox" class="filled-in" id="w4" />
+            <label for="w4">Torsdag</label>
+            <input type="checkbox" class="filled-in" id="w5" />
+            <label for="w5">Fredag</label>
+            <input type="checkbox" class="filled-in" id="w6" />
+            <label for="w6">Lördag</label>
+            <input type="checkbox" class="filled-in" id="w0" />
+            <label for="w0">Söndag</label>
+        </div>
+    </div>
     <div class="row">
         <div class="input-field col s12">
-            <textarea id="sql" class="materialize-textarea">select * from table2 where id=2;</textarea>
+            <textarea id="sql" class="materialize-textarea">select * from table2 where id<22;</textarea>
             <label for="sql">SQL</label>
         </div>
     </div>
-    <!--</form>-->
-    <!--</div>-->
     <button class="waves-effect waves-light btn" onclick="send()">Kör query mot databasen</button>
     <div id="res"></div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
 <script>
+    // var props = ['where id<22'];
+    //all "where"-rules go here. Eg: select ... where id=22 <=> id: 22
+    var props = {
+        id: "<22",
+        w0: false,
+        w1: false,
+        w2: false,
+        w3: false,
+        w4: false,
+        w5: false,
+        w6: false,
+        cameramodel: "='Canon EOS M'"
+    }
+
+    $("#weekdays input").click(function () {
+        //this.checked is what the checkbox is going to be after the click
+        // console.log(this.checked)
+        props[this.id] = this.checked;
+        // $("#sql").val('select * from table2 where extract(dow from date)=' + this.id.charAt(1));
+    });
+    setInterval(() => {
+        var sql = "select filepath from table2 where ";
+        var tot = 0;
+        for (key in props) {
+            
+            if (key.charAt(0) == 'w') {
+                if(props[key]){
+                    sql += `extract(dow from date)=${key.charAt(1)}`;
+                    tot++;
+                    
+                    if (tot != 0)
+                        sql += " and ";
+                }
+            }
+            else{
+                sql += `${key}${props[key]}`;
+                tot++;
+                
+                if (tot != 0)
+                    sql += " and ";
+            }
+        }
+        sql = sql.substring(0,sql.length-5)
+        console.log(sql);
+        $("#sql").val(sql);
+    }, 1000);
+
     function send() {
         $.get("query", {
             sql: $("#sql").val()
